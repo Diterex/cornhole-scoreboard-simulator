@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cornhole Scoreboard Simulator</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <h1>Cornhole Scoreboard Simulator</h1>
+          <p>Two boards, local manual scoring, feedback-only wireless events.</p>
+        </div>
+        <div class="status-strip" aria-label="Simulation status">
+          <span id="wireless-status">ESP-NOW: on</span>
+          <span id="ota-status">OTA: 10:00</span>
+          <span id="refresh-status">Refresh: 30 Hz</span>
+        </div>
+      </header>
+
+      <section class="controls-band" aria-label="Global controls">
+        <button id="toggle-wireless" type="button">Toggle ESP-NOW</button>
+        <button id="ota-restart" type="button">Restart OTA Window</button>
+        <button id="idle-five" type="button">Simulate 5 Min Idle</button>
+        <button id="idle-fifteen" type="button">Simulate 15 Min Idle</button>
+        <button id="test-speaker" type="button">Test Speaker</button>
+        <button id="new-game" type="button">New Game</button>
+        <label class="toggle-control">
+          <input id="sound-enabled" type="checkbox" checked>
+          Sound on
+        </label>
+        <label class="range-control">
+          Ambient light
+          <input id="ambient-light" type="range" min="0" max="100" value="55">
+        </label>
+        <label class="range-control">
+          Score color
+          <input id="score-color" type="color" value="#ff2222">
+        </label>
+        <label class="range-control">
+          Speaker volume
+          <input id="speaker-volume" type="range" min="0" max="100" value="60">
+        </label>
+      </section>
+
+      <section class="game-setup" aria-label="Game setup">
+        <label>
+          Team on Board A
+          <input id="team-name-a" type="text" maxlength="18" value="Team A">
+        </label>
+        <label>
+          Team on Board B
+          <input id="team-name-b" type="text" maxlength="18" value="Team B">
+        </label>
+        <div class="game-summary">
+          <span id="game-started">Game started: now</span>
+          <span id="last-score-event">Last score: none yet</span>
+        </div>
+      </section>
+
+      <section class="app-payload" aria-label="Future app status payload">
+        <header>
+          <h2>App Status Payload</h2>
+          <p>Preview of what Board A will report to the future Flutter app.</p>
+        </header>
+        <pre id="app-payload">{}</pre>
+      </section>
+
+      <section class="boards-grid" aria-label="Scoreboards">
+        <article class="board" data-board="A">
+          <header class="board-header">
+            <div>
+              <h2>Board A</h2>
+              <p id="team-label-a">Team A score</p>
+            </div>
+            <div class="battery good" id="battery-a">Battery: good</div>
+          </header>
+          <div class="digit-row" id="display-a" aria-label="Board A score display"></div>
+          <div class="button-led" id="button-led-a" aria-label="Board A button status LED"></div>
+          <div class="board-controls">
+            <button data-action="score" data-board="A" type="button">Press Score Button</button>
+            <button data-action="hold-reset" data-board="A" type="button">Hold 5s Reset</button>
+            <button data-action="vibration" data-board="A" type="button">Vibration</button>
+            <button data-action="ir" data-board="A" type="button">IR Motion</button>
+          </div>
+          <p class="board-state" id="state-a">Ready</p>
+        </article>
+
+        <article class="board" data-board="B">
+          <header class="board-header">
+            <div>
+              <h2>Board B</h2>
+              <p id="team-label-b">Team B score</p>
+            </div>
+            <div class="battery good" id="battery-b">Battery: good</div>
+          </header>
+          <div class="digit-row" id="display-b" aria-label="Board B score display"></div>
+          <div class="button-led" id="button-led-b" aria-label="Board B button status LED"></div>
+          <div class="board-controls">
+            <button data-action="score" data-board="B" type="button">Press Score Button</button>
+            <button data-action="hold-reset" data-board="B" type="button">Hold 5s Reset</button>
+            <button data-action="vibration" data-board="B" type="button">Vibration</button>
+            <button data-action="ir" data-board="B" type="button">IR Motion</button>
+          </div>
+          <p class="board-state" id="state-b">Ready</p>
+        </article>
+      </section>
+
+      <section class="event-log" aria-label="Event log">
+        <header>
+          <h2>Event Log</h2>
+          <button id="clear-log" type="button">Clear</button>
+        </header>
+        <ol id="log-list"></ol>
+      </section>
+
+      <section class="event-log" aria-label="Score history">
+        <header>
+          <h2>Score History</h2>
+          <button id="clear-score-history" type="button">Clear</button>
+        </header>
+        <ol id="score-history-list"></ol>
+      </section>
+    </main>
+
+    <script src="simulator.js"></script>
+  </body>
+</html>
