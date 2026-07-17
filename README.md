@@ -20,6 +20,7 @@ It lets you test:
 - Score color changes.
 - Sound on/off and volume controls.
 - Light sleep and deep sleep simulation.
+- Board A staying awake while a phone is connected to its portal.
 - OTA window status.
 - App/status payload preview.
 

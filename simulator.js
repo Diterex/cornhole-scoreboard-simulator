@@ -40,6 +40,7 @@ const boards = {
 
 const simulatorStartedAt = Date.now();
 let wirelessEnabled = true;
+let portalConnected = false;
 let otaWindowEndsAt = Date.now() + OTA_WINDOW_MS;
 let refreshHz = NORMAL_REFRESH_HZ;
 let soundEnabled = true;
@@ -500,7 +501,8 @@ function updateAppPayload(now) {
       ssid: "Cornhole-Scoreboard-A",
       url: "http://192.168.4.1",
       adminPinRequired: true,
-      otaRequiresButtonPress: true
+      otaRequiresButtonPress: true,
+      connectedClients: portalConnected ? 1 : 0
     },
     boards: {
       A: appBoardPayload(boards.A, now),
@@ -583,11 +585,25 @@ function clearScoreHistory() {
 function simulateIdle(minutes) {
   stopMelody();
   for (const board of Object.values(boards)) {
+    // Board A hosts the phone portal. While a phone is connected it stays awake
+    // instead of sleeping, matching canEnterLowPowerIdle()/canEnterDeepSleep()
+    // in the firmware. Board B has no portal and always rests.
+    if (board.id === "A" && portalConnected) {
+      board.sleeping = false;
+      board.deepSleeping = false;
+      board.effect = "none";
+      continue;
+    }
     board.sleeping = true;
     board.deepSleeping = minutes >= 15;
     board.effect = "none";
   }
-  log(`all boards: simulated ${minutes} minutes idle`);
+
+  if (portalConnected) {
+    log(`Board B: simulated ${minutes} minutes idle. Board A stayed awake for the connected phone.`);
+  } else {
+    log(`all boards: simulated ${minutes} minutes idle`);
+  }
 }
 
 function randomColor() {
@@ -698,6 +714,10 @@ document.getElementById("ota-restart").addEventListener("click", () => {
   log("OTA window restarted");
 });
 
+document.getElementById("portal-connected").addEventListener("change", () => {
+  portalConnected = document.getElementById("portal-connected").checked;
+  log(`portal phone ${portalConnected ? "connected to Board A" : "disconnected"}`);
+});
 document.getElementById("idle-five").addEventListener("click", () => simulateIdle(5));
 document.getElementById("idle-fifteen").addEventListener("click", () => simulateIdle(15));
 document.getElementById("test-speaker").addEventListener("click", testSpeaker);
